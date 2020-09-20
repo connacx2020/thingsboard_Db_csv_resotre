@@ -1,6 +1,13 @@
 ### Postgres DB csv data insert with CLI
 
-## Run from terminal
+#### Create .env file at root directory
+PGUSER= username
+PGHOST= 127.0.0.1
+PGPASSWORD=password
+PGDATABASE= dbname
+PGPORT= 5432
+
+#### Run from terminal
 - For East door
  ```node app.js East```
 - For West door
