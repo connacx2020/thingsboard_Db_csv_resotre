@@ -1,5 +1,5 @@
 {
-  "name": "pg_restore",
+  "name": "thingsboard_DB_restore",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
