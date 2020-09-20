@@ -71,10 +71,12 @@ function pushToDB(door) {
             break;
 
         case 'West':
-            WestData.map(res =>
+            WestData.map(res => {
+                console.log(res)
                 pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door2',${res.split(',')[1]},null,null,${res.split(',')[2]},null);`, (err, result) => {
                     console.log(err, result.command)
                 })
+            }
             )
             break;
 
