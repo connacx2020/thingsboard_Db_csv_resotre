@@ -16,3 +16,6 @@ PGPORT= 5432
  ```node app.js Circle```
 - For B2 door
  ```node app.js B2```
+
+ ### For Patronas data delete with date range
+ ```node app.js 2020-11-12 2020-11-15```
