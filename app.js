@@ -15,15 +15,15 @@ const pool = new Pool({
 
 let result = [];
 
-readFromCSV('./Publika CSV (1706 - 0508) - Sheet1.csv');
+readFromCSV('./data.csv');
 
 
 function readFromCSV(filepath) {
     fs.createReadStream(filepath)
         .pipe(csv())
         .on('data', (row) => {
-            let momentDate = moment(row.datetime, "DD/MM/YYYY");                                        //convert date format dd/mm/yyyy to mm/dd/yyyy
-            let date = momentDate.toDate().toLocaleDateString() + ' 13:00:00';                          //convert date format dd/mm/yyyy to mm/dd/yyyy
+            let momentDate = moment(row.datetime, "MM/DD/YYYY");                                        //convert date format dd/mm/yyyy to mm/dd/yyyy
+            let date = momentDate.toDate().toLocaleDateString() + ' 13:00:00';
             result.push(row.door + ',' + new Date(date).getTime().toString() + ',' + row.visitor);      //push result to array
         })
         .on('end', () => {
@@ -36,7 +36,7 @@ function readFromCSV(filepath) {
 function pushToDB(door) {
     let totalcsvData = 0;
 
-    // pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door2',${result[0].split(',')[1]},null,null,${result[0].split(',')[2]},null);`, (err, res) => {
+    // pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door2',123,null,null,4,null);`, (err, res) => {
     //     console.log(err, res.command)
     // });
 
@@ -47,30 +47,30 @@ function pushToDB(door) {
 
     result.map((res) => {
         totalcsvData++;
-        if (res.split(',')[0] === 'East') {
+        if (res.split(',')[0].toLowerCase() === 'east') {
             EastData.push(res);
         }
-        else if (res.split(',')[0] === 'West') {
+        else if (res.split(',')[0].toLowerCase() === 'west') {
             WestData.push(res);
         }
-        else if (res.split(',')[0] === 'Circle') {
+        else if (res.split(',')[0].toLowerCase() === 'circle') {
             CircleData.push(res);
         }
-        else if (res.split(',')[0] === 'B2') {
+        else if (res.split(',')[0].toLowerCase() === 'b2') {
             B2Data.push(res);
         }
     });
 
-    switch (door) {
-        case 'East':
+    switch (door.toLowerCase()) {
+        case 'east':
             EastData.map(res =>
-                pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door1',${res.split(',')[1]},null,null,${res.split(',')[2]},null);`, (err, result) => {
+                pool.query(`INSERT INTO ts_kv values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door1',${parseInt(res.split(',')[1])},null,null,${parseInt(res.split(',')[2])},null);`, (err, result) => {
                     console.log(err, result.command);
                 })
             )
             break;
 
-        case 'West':
+        case 'west':
             WestData.map(res => {
                 console.log(res)
                 pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door2',${res.split(',')[1]},null,null,${res.split(',')[2]},null);`, (err, result) => {
@@ -80,7 +80,7 @@ function pushToDB(door) {
             )
             break;
 
-        case 'Circle':
+        case 'circle':
             CircleData.map(res =>
                 pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door3',${res.split(',')[1]},null,null,${res.split(',')[2]},null);`, (err, result) => {
                     console.log(err, result.command)
@@ -88,7 +88,7 @@ function pushToDB(door) {
             )
             break;
 
-        case 'B2':
+        case 'b2':
             B2Data.map(res =>
                 pool.query(`insert into ts_kv (entity_type,entity_id,key,ts,bool_v,str_v,long_v,dbl_v) values ('CUSTOMER','1ea296c156d41b083816530eccc01ed','visitor_count_door4',${res.split(',')[1]},null,null,${res.split(',')[2]},null);`, (err, result) => {
                     console.log(err, result.command)
